@@ -18,7 +18,7 @@ spec:
       emptyDir: {}
   buildSteps:
     - name: buildah-bud
-      image: quay.io/containers/buildah:v1.29.0
+      image: quay.io/containers/buildah:v1.29.1
       workingDir: $(params.shp-source-root)
       securityContext:
         privileged: true
@@ -40,7 +40,7 @@ spec:
         - name: buildah-images
           mountPath: /var/lib/containers/storage
     - name: buildah-push
-      image: quay.io/containers/buildah:v1.29.0
+      image: quay.io/containers/buildah:v1.29.1
       securityContext:
         privileged: true
       command:
@@ -76,7 +76,7 @@ spec:
       emptyDir: {}
   buildSteps:
     - name: buildah-bud
-      image: quay.io/containers/buildah:v1.29.0
+      image: quay.io/containers/buildah:v1.29.1
       workingDir: $(params.shp-source-root)
       securityContext:
         privileged: true
@@ -105,7 +105,7 @@ spec:
             fieldRef:
               fieldPath: "my-fieldpath"
     - name: buildah-push
-      image: quay.io/containers/buildah:v1.29.0
+      image: quay.io/containers/buildah:v1.29.1
       securityContext:
         privileged: true
       command:
@@ -348,4 +348,22 @@ spec:
       echo -n "${sum}" > '$(results.shp-image-size.path)'
     - --
     - $(params.args[*])
+`
+
+// BuildStrategyWithoutPush is a strategy that writes an image tarball and pushes nothing
+const BuildStrategyWithoutPush = `
+apiVersion: shipwright.io/v1alpha1
+kind: BuildStrategy
+metadata:
+  name: strategy-without-push
+spec:
+  buildSteps:
+  - name: store-tarball
+    image: gcr.io/go-containerregistry/crane:v0.14.0
+    command:
+    - crane
+    args:
+    - export
+    - busybox
+    - $(params.shp-output-directory)/image.tar
 `
